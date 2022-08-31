@@ -2,11 +2,10 @@ package ru.netology.delivery.test;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.logevents.SelenideLogger;
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import io.qameta.allure.selenide.AllureSelenide;
+import org.junit.jupiter.api.*;
 import org.openqa.selenium.Keys;
 import ru.netology.delivery.data.DataGenerator;
 
@@ -21,6 +20,12 @@ class DeliveryTest {
     @BeforeAll
     static void setUpAll() {
         WebDriverManager.chromedriver().setup();
+        SelenideLogger.addListener("allure", new AllureSelenide());
+    }
+
+    @AfterAll
+    static void tearDownAll() {
+        SelenideLogger.removeListener("allure");
     }
 
     @BeforeEach
@@ -37,7 +42,7 @@ class DeliveryTest {
         var daysToAddForSecondMeeting = 7;
         var secondMeetingDate = DataGenerator.generateDate(daysToAddForSecondMeeting);
         $("[placeholder='Город']").setValue(validUser.getCity());
-        $("[data-test-id='date'] .input__control").sendKeys(Keys.CONTROL + "A",BACK_SPACE);
+        $("[data-test-id='date'] .input__control").sendKeys(Keys.CONTROL + "A", BACK_SPACE);
         $("[data-test-id='date'] .input__control").setValue(firstMeetingDate);
         $("[name='name']").setValue(validUser.getName());
         $("[name='phone']").setValue(validUser.getPhone());
@@ -45,7 +50,7 @@ class DeliveryTest {
         $x("//span[contains(text(), 'Запланировать')]").click();
         $x("//*[contains(text(),'Успешно!')]").shouldBe(Condition.visible, Duration.ofSeconds(15));
         $("div .notification__content").shouldHave(Condition.exactText("Встреча успешно запланирована на " + firstMeetingDate));
-        $("[data-test-id='date'] .input__control").sendKeys(Keys.CONTROL + "A",BACK_SPACE);
+        $("[data-test-id='date'] .input__control").sendKeys(Keys.CONTROL + "A", BACK_SPACE);
         $("[data-test-id='date'] .input__control").setValue(secondMeetingDate);
         $x("//span[@class='button__text']").click();
         $("[data-test-id='success-notification']").shouldBe(Condition.visible, Duration.ofSeconds(15));
@@ -53,11 +58,5 @@ class DeliveryTest {
         $("[data-test-id='success-notification']").shouldHave(Condition.exactText("Успешно! Встреча успешно запланирована на " + secondMeetingDate),
                 Duration.ofSeconds(15));
 
-        // TODO: добавить логику теста в рамках которого будет выполнено планирование и перепланирование встречи.
-        // Для заполнения полей формы можно использовать пользователя validUser и строки с датами в переменных
-        // firstMeetingDate и secondMeetingDate. Можно также вызывать методы generateCity(locale),
-        // generateName(locale), generatePhone(locale) для генерации и получения в тесте соответственно города,
-        // имени и номера телефона без создания пользователя в методе generateUser(String locale) в датагенераторе
     }
-
 }
