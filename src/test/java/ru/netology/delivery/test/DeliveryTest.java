@@ -19,7 +19,6 @@ import static org.openqa.selenium.Keys.BACK_SPACE;
 class DeliveryTest {
     @BeforeAll
     static void setUpAll() {
-        WebDriverManager.chromedriver().setup();
         SelenideLogger.addListener("allure", new AllureSelenide());
     }
 
